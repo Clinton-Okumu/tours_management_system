@@ -1,10 +1,9 @@
-
 services:
   db:
-    container_name: "tours_dev"
+    container_name: "tours_db"
     image: "postgres:16-alpine"
     ports:
-      - "5435:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
@@ -17,7 +16,7 @@ services:
     container_name: "tours_test"
     image: "postgres:16-alpine"
     ports:
-      - "5436:5432"
+      - "5434:5432"
     environment:
       POSTGRES_USER: "testuser"
       POSTGRES_PASSWORD: "testpassword"

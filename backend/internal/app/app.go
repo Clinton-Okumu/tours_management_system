@@ -1,67 +1,48 @@
 package app
 
 import (
+	"backend/internal/store"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"gorm.io/driver/postgres"
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
 type Application struct {
-	Logger *log.Logger
 	DB     *gorm.DB
+	Logger *log.Logger
 }
 
-func NewApplication(dbConnStr string) (*Application, error) {
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+func NewApplication() (*Application, error) {
+	// load environment variables
+	if err := godotenv.Load(); err != nil {
+		return nil, fmt.Errorf("failed to load .env file: %w", err)
+	}
 
-	gormDB, err := gorm.Open(postgres.Open(dbConnStr), &gorm.Config{})
+	// database connection
+	db, err := store.Open()
 	if err != nil {
-		logger.Printf("Error connecting to database with GORM: %v", err)
-		return nil, fmt.Errorf("error connecting to database: %w", err)
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	sqlDB, err := gormDB.DB()
-	if err != nil {
-		logger.Printf("Error getting underlying sql.DB: %v", err)
-		return nil, fmt.Errorf("error getting underlying sql.DB: %w", err)
+	// automigrate models
+	if err := store.RunMigrations(db); err != nil {
+		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
-	sqlDB.SetMaxOpenConns(25)
-	sqlDB.SetMaxIdleConns(25)
-	sqlDB.SetConnMaxLifetime(5 * time.Minute)
-
-	if err := sqlDB.Ping(); err != nil {
-		logger.Printf("Error pinging database: %v", err)
-		return nil, fmt.Errorf("error pinging database: %w", err)
-	}
-
-	logger.Println("Successfully connected to database")
+	// setup Logger
+	logger := log.New(os.Stdout, "[Tours] ", log.Ldate|log.Ltime)
 
 	app := &Application{
+		DB:     db,
 		Logger: logger,
-		DB:     gormDB,
 	}
-
 	return app, nil
 }
 
 func (a *Application) HealthChecker(w http.ResponseWriter, r *http.Request) {
-	sqlDB, err := a.DB.DB()
-	if err != nil {
-		a.Logger.Printf("Health check: Failed to get underlying DB for ping: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if err := sqlDB.Ping(); err != nil {
-		a.Logger.Printf("Health check: Database ping failed: %v", err)
-		http.Error(w, "Database not healthy", http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprint(w, "Status is available (DB Healthy)\n")
+	fmt.Fprintf(w, "Status is available\n")
 }
