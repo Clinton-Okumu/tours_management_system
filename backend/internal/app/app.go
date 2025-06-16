@@ -1,6 +1,7 @@
 package app
 
 import (
+	"backend/internal/api"
 	"backend/internal/store"
 	"fmt"
 	"log"
@@ -12,8 +13,9 @@ import (
 )
 
 type Application struct {
-	DB     *gorm.DB
-	Logger *log.Logger
+	DB          *gorm.DB
+	Logger      *log.Logger
+	TourHandler *api.TourHandler
 }
 
 func NewApplication() (*Application, error) {
@@ -36,9 +38,16 @@ func NewApplication() (*Application, error) {
 	// setup Logger
 	logger := log.New(os.Stdout, "[Tours] ", log.Ldate|log.Ltime)
 
+	// stores
+	tourStore := store.NewTourStore(db)
+
+	// handlers
+	tourHandler := api.NewTourHandler(tourStore, logger)
+
 	app := &Application{
-		DB:     db,
-		Logger: logger,
+		DB:          db,
+		Logger:      logger,
+		TourHandler: tourHandler,
 	}
 	return app, nil
 }
