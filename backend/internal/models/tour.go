@@ -15,7 +15,8 @@ type Tour struct {
 	Price        float64 `gorm:"not null"`
 	ImageCover   string  `gorm:"type:varchar(255)"`
 
-	StartDates []time.Time `gorm:"-"`
+	start_date time.Time
+	end_date   time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
