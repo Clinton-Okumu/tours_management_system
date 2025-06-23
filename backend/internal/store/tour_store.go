@@ -34,7 +34,7 @@ func (ts *tourStore) CreateTour(ctx context.Context, tour *models.Tour) (*models
 
 func (ts *tourStore) GetTourByID(ctx context.Context, tourID uint) (*models.Tour, error) {
 	var tour models.Tour
-	if err := ts.db.WithContext(ctx).Preload("Activities").First(&tour, tourID).Error; err != nil {
+	if err := ts.db.WithContext(ctx).First(&tour, tourID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrTourNotFound
 		}
@@ -44,7 +44,11 @@ func (ts *tourStore) GetTourByID(ctx context.Context, tourID uint) (*models.Tour
 }
 
 func (ts *tourStore) UpdateTour(ctx context.Context, tour *models.Tour) error {
-	return ts.db.WithContext(ctx).Updates(tour).Error
+	return ts.db.WithContext(ctx).
+		Model(&models.Tour{}).
+		Where("id = ?", tour.ID).
+		Updates(tour).
+		Error
 }
 
 func (ts *tourStore) DeleteTour(ctx context.Context, tourID uint) error {
