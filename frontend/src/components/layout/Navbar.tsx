@@ -1,19 +1,22 @@
 "use client";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const NavbarLinks = [
   { id: 1, title: "Home", link: "/" },
-  { id: 2, title: "Tours", link: "#" },
-  { id: 3, title: "Features", link: "#" },
-  { id: 4, title: "About", link: "#" },
-  { id: 5, title: "Contact", link: "#" },
+  { id: 2, title: "Tours", link: "/tours" },
+  { id: 3, title: "Features", link: "/features" },
+  { id: 4, title: "About", link: "/about" },
+  { id: 5, title: "Contact", link: "/contact" },
 ];
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Handle scroll effect
   useEffect(() => {
@@ -42,6 +45,13 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
+  // Check if link is active
+  const isActiveLink = (link: string) => {
+    if (link === "/" && pathname === "/") return true;
+    if (link !== "/" && pathname.startsWith(link)) return true;
+    return false;
+  };
+
   return (
     <div
       className={`w-full mx-auto px-4 py-4 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 nav-container ${
@@ -68,15 +78,25 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <div className="hidden md:block">
         <ul className="flex gap-6">
-          {NavbarLinks.map((link) => (
-            <li key={link.id}>
-              <a
-                className="font-medium hover:text-orange-500 transition-colors duration-200 relative group"
-                href={link.link}
+          {NavbarLinks.map((navLink) => (
+            <li key={navLink.id}>
+              <Link
+                className={`font-medium transition-colors duration-200 relative group ${
+                  isActiveLink(navLink.link)
+                    ? "text-orange-500"
+                    : "text-gray-800 hover:text-orange-500"
+                }`}
+                href={navLink.link}
               >
-                {link.title}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-400 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+                {navLink.title}
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-orange-400 transition-all duration-300 ${
+                    isActiveLink(navLink.link)
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
+              </Link>
             </li>
           ))}
         </ul>
@@ -139,23 +159,27 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="absolute top-full left-0 right-0 bg-white p-5 shadow-lg md:hidden border-t border-gray-100 animate-fade-in">
           <ul className="flex flex-col gap-4">
-            {NavbarLinks.map((link) => (
-              <li key={link.id} className="border-b border-gray-100 pb-2">
-                <a
-                  className="block text-gray-800 hover:text-orange-500 transition-colors text-lg font-medium"
-                  href={link.link}
+            {NavbarLinks.map((navLink) => (
+              <li key={navLink.id} className="border-b border-gray-100 pb-2">
+                <Link
+                  className={`block transition-colors text-lg font-medium ${
+                    isActiveLink(navLink.link)
+                      ? "text-orange-500"
+                      : "text-gray-800 hover:text-orange-500"
+                  }`}
+                  href={navLink.link}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {link.title}
-                </a>
+                  {navLink.title}
+                </Link>
               </li>
             ))}
-            <li className="pt-2">
-              <button className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-medium text-center transition-all duration-300">
-                Signup
-              </button>
+            <li className="pt-2 space-y-2">
               <button className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-medium text-center transition-all duration-300">
                 Login
+              </button>
+              <button className="w-full bg-transparent hover:bg-orange-50 border-2 border-orange-500 px-6 py-3 rounded-lg text-orange-500 font-medium text-center transition-all duration-300">
+                Signup
               </button>
             </li>
           </ul>

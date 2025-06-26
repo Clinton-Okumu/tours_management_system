@@ -13,10 +13,11 @@ import (
 )
 
 type Application struct {
-	DB             *gorm.DB
-	Logger         *log.Logger
-	TourHandler    *api.TourHandler
-	BookingHandler *api.BookingHandler
+	DB              *gorm.DB
+	Logger          *log.Logger
+	TourHandler     *api.TourHandler
+	BookingHandler  *api.BookingHandler
+	LocationHandler *api.LocationHandler
 }
 
 func NewApplication() (*Application, error) {
@@ -42,16 +43,19 @@ func NewApplication() (*Application, error) {
 	// stores
 	tourStore := store.NewTourStore(db)
 	bookingStore := store.NewBookingStore(db)
+	locationStore := store.NewLocationStore(db)
 
 	// handlers
 	tourHandler := api.NewTourHandler(tourStore, logger)
 	bookingHandler := api.NewBookingHandler(bookingStore, logger)
+	locationHandler := api.NewLocationHandler(locationStore, logger)
 
 	app := &Application{
-		DB:             db,
-		Logger:         logger,
-		TourHandler:    tourHandler,
-		BookingHandler: bookingHandler,
+		DB:              db,
+		Logger:          logger,
+		TourHandler:     tourHandler,
+		BookingHandler:  bookingHandler,
+		LocationHandler: locationHandler,
 	}
 	return app, nil
 }
