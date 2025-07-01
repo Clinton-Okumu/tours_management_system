@@ -58,5 +58,6 @@ func RunMigrations(db *gorm.DB) error {
 		&models.Booking{},
 		&models.Review{},
 		&models.Location{},
+		&models.Token{},
 	)
 }

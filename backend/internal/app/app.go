@@ -2,6 +2,7 @@ package app
 
 import (
 	"backend/internal/api"
+	"backend/internal/middleware"
 	"backend/internal/store"
 	"fmt"
 	"log"
@@ -18,6 +19,10 @@ type Application struct {
 	TourHandler     *api.TourHandler
 	BookingHandler  *api.BookingHandler
 	LocationHandler *api.LocationHandler
+	ReviewHandler   *api.ReviewHandler
+	UserHandler     *api.UserHandler
+	TokenHandler    *api.TokenHandler
+	Middleware      middleware.UserMiddleware
 }
 
 func NewApplication() (*Application, error) {
@@ -44,11 +49,18 @@ func NewApplication() (*Application, error) {
 	tourStore := store.NewTourStore(db)
 	bookingStore := store.NewBookingStore(db)
 	locationStore := store.NewLocationStore(db)
+	reviewStore := store.NewReviewStore(db)
+	userStore := store.NewUserStore(db)
+	tokenStore := store.NewTokenStore(db)
 
 	// handlers
 	tourHandler := api.NewTourHandler(tourStore, logger)
 	bookingHandler := api.NewBookingHandler(bookingStore, logger)
 	locationHandler := api.NewLocationHandler(locationStore, logger)
+	reviewHandler := api.NewReviewHandler(reviewStore, logger)
+	userHandler := api.NewUserHandler(userStore, logger)
+	tokenHandler := api.NewTokenHandler(tokenStore, userStore, logger)
+	middlwareHandler := middleware.UserMiddleware{UserStore: userStore}
 
 	app := &Application{
 		DB:              db,
@@ -56,6 +68,10 @@ func NewApplication() (*Application, error) {
 		TourHandler:     tourHandler,
 		BookingHandler:  bookingHandler,
 		LocationHandler: locationHandler,
+		ReviewHandler:   reviewHandler,
+		UserHandler:     userHandler,
+		TokenHandler:    tokenHandler,
+		Middleware:      middlwareHandler,
 	}
 	return app, nil
 }
