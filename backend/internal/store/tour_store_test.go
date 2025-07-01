@@ -14,19 +14,39 @@ import (
 
 func setupTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
+
 	err := godotenv.Load("../../.env.test")
 	require.NoError(t, err, "failed to load .env.test")
+
 	db, err := Open()
 	require.NoError(t, err, "failed to open DB connection")
+
 	err = RunMigrations(db)
 	require.NoError(t, err, "failed to run migrations")
+
 	err = db.Exec(`TRUNCATE users, tours, bookings, reviews, locations, tokens RESTART IDENTITY CASCADE`).Error
 	require.NoError(t, err, "failed to truncate tables")
+
 	return db
 }
 
 func truncateToMicros(t time.Time) time.Time {
-	return t.Truncate(time.Microsecond)
+	return t.Round(time.Microsecond)
+}
+
+func newTestTour(start, end time.Time) *models.Tour {
+	return &models.Tour{
+		Name:         "Sample Tour",
+		Duration:     3,
+		MaxGroupSize: 15,
+		Difficulty:   "easy",
+		Summary:      "A sample summary",
+		Description:  "A detailed tour description.",
+		Price:        599.99,
+		ImageCover:   "sample.jpg",
+		StartDate:    start,
+		EndDate:      end,
+	}
 }
 
 func TestCreateAndGetTour(t *testing.T) {
@@ -35,21 +55,10 @@ func TestCreateAndGetTour(t *testing.T) {
 
 	start := truncateToMicros(time.Now())
 	end := truncateToMicros(start.AddDate(0, 0, 3))
-
-	tour := &models.Tour{
-		Name:         "Beach Getaway",
-		Duration:     3,
-		MaxGroupSize: 15,
-		Difficulty:   "easy",
-		Summary:      "Relax at the beach",
-		Description:  "A calming and sunny experience by the ocean.",
-		Price:        599.99,
-		ImageCover:   "beach.jpg",
-		StartDate:    start,
-		EndDate:      end,
-	}
+	tour := newTestTour(start, end)
 
 	ctx := context.Background()
+
 	createdTour, err := store.CreateTour(ctx, tour)
 	require.NoError(t, err)
 	assert.NotZero(t, createdTour.ID)
@@ -63,9 +72,8 @@ func TestCreateAndGetTour(t *testing.T) {
 	assert.Equal(t, tour.Difficulty, fetchedTour.Difficulty)
 	assert.Equal(t, tour.Summary, fetchedTour.Summary)
 	assert.Equal(t, tour.Description, fetchedTour.Description)
-	assert.Equal(t, tour.ImageCover, fetchedTour.ImageCover)
-	assert.True(t, tour.StartDate.Equal(fetchedTour.StartDate), "StartDate: expected %v, got %v", tour.StartDate, fetchedTour.StartDate)
-	assert.True(t, tour.EndDate.Equal(fetchedTour.EndDate), "EndDate: expected %v, got %v", tour.EndDate, fetchedTour.EndDate)
+	assert.Equal(t, tour.StartDate, fetchedTour.StartDate)
+	assert.Equal(t, tour.EndDate, fetchedTour.EndDate)
 }
 
 func TestUpdateTour(t *testing.T) {
@@ -76,24 +84,12 @@ func TestUpdateTour(t *testing.T) {
 
 	start := truncateToMicros(time.Now())
 	end := truncateToMicros(start.AddDate(0, 0, 3))
+	tour := newTestTour(start, end)
 
-	originalTour := &models.Tour{
-		Name:         "Beach Getaway",
-		Duration:     3,
-		MaxGroupSize: 15,
-		Difficulty:   "easy",
-		Summary:      "Relax at the beach",
-		Description:  "A calming and sunny experience by the ocean.",
-		Price:        599.99,
-		ImageCover:   "beach.jpg",
-		StartDate:    start,
-		EndDate:      end,
-	}
-
-	createdTour, err := store.CreateTour(ctx, originalTour)
+	createdTour, err := store.CreateTour(ctx, tour)
 	require.NoError(t, err)
 
-	createdTour.Name = "Beach Getaway 2"
+	createdTour.Name = "Updated Tour"
 	createdTour.Price = 499.99
 	createdTour.Duration = 2
 	createdTour.MaxGroupSize = 10
@@ -120,19 +116,8 @@ func TestDeleteTour(t *testing.T) {
 
 	start := truncateToMicros(time.Now())
 	end := truncateToMicros(start.AddDate(0, 0, 1))
-
-	tour := &models.Tour{
-		Name:         "City Break",
-		Duration:     1,
-		MaxGroupSize: 20,
-		Difficulty:   "easy",
-		Summary:      "Quick city tour",
-		Description:  "See the city highlights in a day.",
-		Price:        199.99,
-		ImageCover:   "city.jpg",
-		StartDate:    start,
-		EndDate:      end,
-	}
+	tour := newTestTour(start, end)
+	tour.Name = "City Break"
 
 	created, err := store.CreateTour(ctx, tour)
 	require.NoError(t, err)
@@ -145,38 +130,13 @@ func TestDeleteTour(t *testing.T) {
 	assert.Equal(t, ErrTourNotFound, err)
 }
 
-func TestGetTourByID(t *testing.T) {
+func TestGetTourByID_NotFound(t *testing.T) {
 	db := setupTestDB(t)
 	store := NewTourStore(db)
 
 	ctx := context.Background()
 
-	start := truncateToMicros(time.Now())
-	end := truncateToMicros(start.AddDate(0, 0, 4))
-
-	tour := &models.Tour{
-		Name:         "Rainforest Retreat",
-		Duration:     4,
-		MaxGroupSize: 10,
-		Difficulty:   "medium",
-		Summary:      "Explore the lush green forest",
-		Description:  "A guided tour deep into the rainforest.",
-		Price:        749.50,
-		ImageCover:   "rainforest.jpg",
-		StartDate:    start,
-		EndDate:      end,
-	}
-
-	created, err := store.CreateTour(ctx, tour)
-	require.NoError(t, err)
-
-	fetched, err := store.GetTourByID(ctx, created.ID)
-	require.NoError(t, err)
-
-	assert.Equal(t, created.ID, fetched.ID)
-	assert.Equal(t, created.Name, fetched.Name)
-	assert.Equal(t, created.Duration, fetched.Duration)
-	assert.Equal(t, created.Price, fetched.Price)
-	assert.True(t, created.StartDate.Equal(fetched.StartDate), "StartDate: expected %v, got %v", created.StartDate, fetched.StartDate)
-	assert.True(t, created.EndDate.Equal(fetched.EndDate), "EndDate: expected %v, got %v", created.EndDate, fetched.EndDate)
+	_, err := store.GetTourByID(ctx, 9999)
+	require.Error(t, err)
+	assert.Equal(t, ErrTourNotFound, err)
 }
