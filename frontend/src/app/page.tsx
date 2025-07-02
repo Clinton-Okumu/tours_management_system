@@ -1,9 +1,8 @@
 import BookingForm from "@/components/home/BookingForm";
-import OurDestinations from "@/components/home/FeaturedTours";
 import HeroImage from "@/components/home/Hero";
 import Testimonials from "@/components/home/Testimonials";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
-
+import OurDestinations from "@/components/home/FeaturedTours";
 export default function HomePage() {
   return (
     <>
