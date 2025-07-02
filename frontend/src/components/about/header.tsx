@@ -1,0 +1,13 @@
+const AboutHeader = () => {
+  return (
+    <>
+      <section className="w-full py-10 px-1 md:px-12 lg:px-24 ">
+        <h2 className="text-center text-2xl md:text-4xl font-bold mb-10 text-gray-800 tracking-wide">
+          — ABOUT US —
+        </h2>
+      </section>
+    </>
+  );
+};
+
+export default AboutHeader;
