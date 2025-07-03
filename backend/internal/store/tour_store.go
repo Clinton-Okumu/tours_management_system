@@ -48,20 +48,14 @@ func (ts *tourStore) GetTourByID(ctx context.Context, tourID uint) (*models.Tour
 }
 
 func (ts *tourStore) UpdateTour(ctx context.Context, tour *models.Tour) error {
-	result := ts.db.WithContext(ctx).Model(&models.Tour{}).Where("id = ?", tour.ID).Updates(map[string]interface{}{
-		"name":           tour.Name,
-		"duration":       tour.Duration,
-		"max_group_size": tour.MaxGroupSize,
-		"difficulty":     tour.Difficulty,
-		"summary":        tour.Summary,
-		"description":    tour.Description,
-		"price":          tour.Price,
-		"image_cover":    tour.ImageCover,
-	})
+	result := ts.db.WithContext(ctx).Model(tour).Updates(tour)
+	if result.Error != nil {
+		return result.Error
+	}
 	if result.RowsAffected == 0 {
 		return ErrTourNotFound
 	}
-	return result.Error
+	return nil
 }
 
 func (ts *tourStore) DeleteTour(ctx context.Context, tourID uint) error {
