@@ -175,10 +175,10 @@ const Navbar = () => {
               </li>
             ))}
             <li className="pt-2 space-y-2">
-              <button className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-medium text-center transition-all duration-300">
+              <button className="w-full bg-orange-400 hover:bg-orange-500 active:scale-95 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-md hover:shadow-lg transition-all duration-300">
                 Login
               </button>
-              <button className="w-full bg-transparent hover:bg-orange-50 border-2 border-orange-500 px-6 py-3 rounded-lg text-orange-500 font-medium text-center transition-all duration-300">
+              <button className="w-full bg-white hover:bg-orange-100 border border-orange-300 px-6 py-3 rounded-lg text-orange-500 font-semibold text-center shadow-sm hover:shadow-md transition-all duration-300">
                 Signup
               </button>
             </li>

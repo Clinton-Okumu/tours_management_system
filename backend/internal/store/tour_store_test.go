@@ -3,8 +3,8 @@ package store
 import (
 	"backend/internal/models"
 	"context"
+	"errors"
 	"testing"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -30,11 +30,7 @@ func setupTestDB(t *testing.T) *gorm.DB {
 	return db
 }
 
-func truncateToMicros(t time.Time) time.Time {
-	return t.Round(time.Microsecond)
-}
-
-func newTestTour(start, end time.Time) *models.Tour {
+func newTestTour() *models.Tour {
 	return &models.Tour{
 		Name:         "Sample Tour",
 		Duration:     3,
@@ -44,8 +40,6 @@ func newTestTour(start, end time.Time) *models.Tour {
 		Description:  "A detailed tour description.",
 		Price:        599.99,
 		ImageCover:   "sample.jpg",
-		StartDate:    start,
-		EndDate:      end,
 	}
 }
 
@@ -53,10 +47,7 @@ func TestCreateAndGetTour(t *testing.T) {
 	db := setupTestDB(t)
 	store := NewTourStore(db)
 
-	start := truncateToMicros(time.Now())
-	end := truncateToMicros(start.AddDate(0, 0, 3))
-	tour := newTestTour(start, end)
-
+	tour := newTestTour()
 	ctx := context.Background()
 
 	createdTour, err := store.CreateTour(ctx, tour)
@@ -72,8 +63,6 @@ func TestCreateAndGetTour(t *testing.T) {
 	assert.Equal(t, tour.Difficulty, fetchedTour.Difficulty)
 	assert.Equal(t, tour.Summary, fetchedTour.Summary)
 	assert.Equal(t, tour.Description, fetchedTour.Description)
-	assert.Equal(t, tour.StartDate, fetchedTour.StartDate)
-	assert.Equal(t, tour.EndDate, fetchedTour.EndDate)
 }
 
 func TestUpdateTour(t *testing.T) {
@@ -82,10 +71,7 @@ func TestUpdateTour(t *testing.T) {
 
 	ctx := context.Background()
 
-	start := truncateToMicros(time.Now())
-	end := truncateToMicros(start.AddDate(0, 0, 3))
-	tour := newTestTour(start, end)
-
+	tour := newTestTour()
 	createdTour, err := store.CreateTour(ctx, tour)
 	require.NoError(t, err)
 
@@ -114,29 +100,16 @@ func TestDeleteTour(t *testing.T) {
 
 	ctx := context.Background()
 
-	start := truncateToMicros(time.Now())
-	end := truncateToMicros(start.AddDate(0, 0, 1))
-	tour := newTestTour(start, end)
+	tour := newTestTour()
 	tour.Name = "City Break"
 
-	created, err := store.CreateTour(ctx, tour)
+	createdTour, err := store.CreateTour(ctx, tour)
 	require.NoError(t, err)
 
-	err = store.DeleteTour(ctx, created.ID)
+	err = store.DeleteTour(ctx, createdTour.ID)
 	require.NoError(t, err)
 
-	_, err = store.GetTourByID(ctx, created.ID)
+	_, err = store.GetTourByID(ctx, createdTour.ID)
 	require.Error(t, err)
-	assert.Equal(t, ErrTourNotFound, err)
-}
-
-func TestGetTourByID_NotFound(t *testing.T) {
-	db := setupTestDB(t)
-	store := NewTourStore(db)
-
-	ctx := context.Background()
-
-	_, err := store.GetTourByID(ctx, 9999)
-	require.Error(t, err)
-	assert.Equal(t, ErrTourNotFound, err)
+	assert.True(t, errors.Is(err, ErrTourNotFound))
 }

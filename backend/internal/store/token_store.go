@@ -12,7 +12,7 @@ import (
 type TokenStore interface {
 	CreateNewToken(ctx context.Context, userID uint, ttl time.Duration, scope string) (*models.Token, string, error)
 	DeleteAllTokensForUser(ctx context.Context, userID uint, scope string) error
-	GetUserByToken(ctx context.Context, tokenPlaintext string) (*models.User, error)
+	GetUserByToken(ctx context.Context, tokenPlaintext string, scope string) (*models.User, error)
 }
 
 type tokenStore struct {
@@ -42,12 +42,12 @@ func (ts *tokenStore) DeleteAllTokensForUser(ctx context.Context, userID uint, s
 		Delete(&models.Token{}).Error
 }
 
-func (ts *tokenStore) GetUserByToken(ctx context.Context, tokenPlaintext string) (*models.User, error) {
+func (ts *tokenStore) GetUserByToken(ctx context.Context, tokenPlaintext string, scope string) (*models.User, error) {
 	hash := tokens.HashToken(tokenPlaintext)
 
 	var token models.Token
 	if err := ts.db.WithContext(ctx).
-		Where("hash = ? AND expiry > ?", hash, time.Now()).
+		Where("hash = ? AND scope = ? AND expiry > ?", hash, scope, time.Now()).
 		First(&token).Error; err != nil {
 		return nil, err
 	}

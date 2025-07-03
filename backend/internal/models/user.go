@@ -4,14 +4,17 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type User struct {
+	gorm.Model
 	ID        uint   `gorm:"primaryKey"`
 	Name      string `gorm:"type:varchar(100);not null"`
 	Email     string `gorm:"type:varchar(100);uniqueIndex;not null"`
 	Password  string `gorm:"type:varchar(255);not null" json:"-"`
 	Role      string `gorm:"type:varchar(20);default:'user'"`
+	Username  string `gorm:"type:varchar(100);uniqueIndex;not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

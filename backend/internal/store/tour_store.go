@@ -34,23 +34,34 @@ func (ts *tourStore) CreateTour(ctx context.Context, tour *models.Tour) (*models
 
 func (ts *tourStore) GetTourByID(ctx context.Context, tourID uint) (*models.Tour, error) {
 	var tour models.Tour
-	if err := ts.db.WithContext(ctx).First(&tour, tourID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrTourNotFound
-		}
+
+	err := ts.db.WithContext(ctx).First(&tour, tourID).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrTourNotFound
+	}
+	if err != nil {
 		return nil, err
 	}
+
 	return &tour, nil
 }
 
 func (ts *tourStore) UpdateTour(ctx context.Context, tour *models.Tour) error {
-	return ts.db.WithContext(ctx).
-		Model(&models.Tour{}).
-		Where("id = ?", tour.ID).
-		Updates(tour).
-		Error
+	result := ts.db.WithContext(ctx).Model(tour).Updates(tour)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return ErrTourNotFound
+	}
+	return nil
 }
 
 func (ts *tourStore) DeleteTour(ctx context.Context, tourID uint) error {
-	return ts.db.WithContext(ctx).Delete(&models.Tour{}, tourID).Error
+	result := ts.db.WithContext(ctx).Delete(&models.Tour{}, tourID)
+	if result.RowsAffected == 0 {
+		return ErrTourNotFound
+	}
+	return result.Error
 }

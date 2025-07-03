@@ -11,7 +11,8 @@ import (
 )
 
 type UserMiddleware struct {
-	UserStore store.UserStore
+	UserStore  store.UserStore
+	TokenStore store.TokenStore
 }
 
 type contextKey string
@@ -49,7 +50,7 @@ func (um *UserMiddleware) Authenticate(next http.Handler) http.Handler {
 		}
 
 		token := parts[1]
-		user, err := um.UserStore.GetUserToken(tokens.ScopeAuth, token)
+		user, err := um.TokenStore.GetUserByToken(r.Context(), token, tokens.ScopeAuth)
 		if err != nil || user == nil {
 			utils.WriteJSON(w, http.StatusUnauthorized, utils.Envelope{"error": "Invalid or expired token"})
 			return

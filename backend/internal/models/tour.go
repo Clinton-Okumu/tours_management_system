@@ -1,11 +1,11 @@
 package models
 
 import (
-	"time"
+	"gorm.io/gorm"
 )
 
 type Tour struct {
-	ID           uint    `gorm:"primaryKey"`
+	gorm.Model
 	Name         string  `gorm:"type:varchar(100);not null"`
 	Duration     int     `gorm:"not null"`
 	MaxGroupSize int     `gorm:"not null"`
@@ -14,9 +14,4 @@ type Tour struct {
 	Description  string  `gorm:"type:text"`
 	Price        float64 `gorm:"not null"`
 	ImageCover   string  `gorm:"type:varchar(255)"`
-
-	StartDate time.Time
-	EndDate   time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }

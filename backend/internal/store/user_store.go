@@ -14,7 +14,6 @@ type UserStore interface {
 	CreateUser(ctx context.Context, user *models.User) error
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*models.User, error)
-	GetUserToken(scope, tokenPlaintext string) (*models.User, error)
 }
 
 type userStore struct {
