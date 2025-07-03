@@ -2,9 +2,12 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Review struct {
+	gorm.Model
 	ID        uint    `gorm:"primaryKey"`
 	UserID    uint    `gorm:"not null"`
 	TourID    uint    `gorm:"not null"`
