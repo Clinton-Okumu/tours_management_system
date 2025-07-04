@@ -115,9 +115,6 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, http.StatusUnauthorized, utils.Envelope{"error": "invalid email or password"})
 		return
 	}
-
-	// Token or session logic can go here later
-
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{
 		"user": map[string]any{
 			"id":    user.ID,
