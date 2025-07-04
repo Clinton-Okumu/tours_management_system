@@ -1,18 +1,11 @@
 package models
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
+import "time"
 
 type Booking struct {
-	gorm.Model
-	ID        uint `gorm:"primaryKey"`
-	UserID    uint `gorm:"not null"`
-	TourID    uint `gorm:"not null"`
-	StartDate time.Time
-	EndDate   time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	BaseModel
+	UserID    uint      `json:"user_id" gorm:"not null"`
+	TourID    uint      `json:"tour_id" gorm:"not null"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
 }

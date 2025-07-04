@@ -29,6 +29,18 @@ func NewTokenHandler(tokenStore store.TokenStore, userStore store.UserStore, log
 	}
 }
 
+// HandleCreateToken godoc
+// @Summary Generate an authentication token
+// @Description Validates email & password and returns an authentication token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param credentials body createTokenRequest true "User credentials"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tokens/authentication [post]
 func (h *TokenHandler) HandleCreateToken(w http.ResponseWriter, r *http.Request) {
 	var req createTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

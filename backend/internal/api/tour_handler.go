@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// TourHandler handles tour-related requests
 type TourHandler struct {
 	tourStore store.TourStore
 	logger    *log.Logger
@@ -22,7 +23,17 @@ func NewTourHandler(store store.TourStore, logger *log.Logger) *TourHandler {
 	}
 }
 
-// POST /tours
+// CreateTour godoc
+// @Summary Create a new tour
+// @Description Add a new tour to the database
+// @Tags tours
+// @Accept json
+// @Produce json
+// @Param tour body models.Tour true "Tour data"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tour [post]
 func (th *TourHandler) CreateTour(w http.ResponseWriter, r *http.Request) {
 	var tour models.Tour
 
@@ -43,7 +54,17 @@ func (th *TourHandler) CreateTour(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"tour": createdTour})
 }
 
-// GET /tours/{id}
+// GetTourByID godoc
+// @Summary Get tour by ID
+// @Description Retrieve a specific tour by its ID
+// @Tags tours
+// @Produce json
+// @Param id path int true "Tour ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tour/{id} [get]
 func (th *TourHandler) GetTourByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {
@@ -65,7 +86,18 @@ func (th *TourHandler) GetTourByID(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"tour": tour})
 }
 
-// PUT /tours/{id}
+// UpdateTour godoc
+// @Summary Update a tour
+// @Description Update an existing tour by ID
+// @Tags tours
+// @Accept json
+// @Produce json
+// @Param id path int true "Tour ID"
+// @Param tour body models.Tour true "Updated tour data"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tour/{id} [put]
 func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {
@@ -93,7 +125,16 @@ func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"message": "tour updated"})
 }
 
-// DELETE /tours/{id}
+// DeleteTour godoc
+// @Summary Delete a tour
+// @Description Delete a specific tour by ID
+// @Tags tours
+// @Produce json
+// @Param id path int true "Tour ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tour/{id} [delete]
 func (th *TourHandler) DeleteTour(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {

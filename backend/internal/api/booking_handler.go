@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// BookingHandler handles booking-related HTTP requests
 type BookingHandler struct {
 	bookingStore store.BookingStore
 	logger       *log.Logger
@@ -22,6 +23,17 @@ func NewBookingHandler(store store.BookingStore, logger *log.Logger) *BookingHan
 	}
 }
 
+// CreateBooking godoc
+// @Summary Create a new booking
+// @Description Create a new booking with tour ID, user ID, and booking details
+// @Tags bookings
+// @Accept json
+// @Produce json
+// @Param booking body models.Booking true "Booking object"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /booking [post]
 func (bh *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 	var booking models.Booking
 
@@ -42,6 +54,17 @@ func (bh *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) 
 	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"booking": createdBooking})
 }
 
+// GetBookingByID godoc
+// @Summary Get a booking by ID
+// @Description Retrieve a booking using its ID
+// @Tags bookings
+// @Produce json
+// @Param id path int true "Booking ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /booking/{id} [get]
 func (bh *BookingHandler) GetBookingByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {
@@ -63,6 +86,18 @@ func (bh *BookingHandler) GetBookingByID(w http.ResponseWriter, r *http.Request)
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"booking": booking})
 }
 
+// UpdateBooking godoc
+// @Summary Update a booking by ID
+// @Description Update an existing booking with new information
+// @Tags bookings
+// @Accept json
+// @Produce json
+// @Param id path int true "Booking ID"
+// @Param booking body models.Booking true "Updated booking object"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /booking/{id} [put]
 func (bh *BookingHandler) UpdateBooking(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {
@@ -90,6 +125,16 @@ func (bh *BookingHandler) UpdateBooking(w http.ResponseWriter, r *http.Request) 
 	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"message": "booking updated"})
 }
 
+// DeleteBooking godoc
+// @Summary Delete a booking by ID
+// @Description Delete a specific booking using its ID
+// @Tags bookings
+// @Produce json
+// @Param id path int true "Booking ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /booking/{id} [delete]
 func (bh *BookingHandler) DeleteBooking(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
 	if err != nil {
