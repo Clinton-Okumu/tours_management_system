@@ -4,6 +4,7 @@ import (
 	"backend/internal/app"
 
 	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func SetUpRoutes(app *app.Application) *chi.Mux {
@@ -34,6 +35,6 @@ func SetUpRoutes(app *app.Application) *chi.Mux {
 	r.Get("/health", app.HealthChecker)
 	r.Post("/register", app.UserHandler.Register)
 	r.Post("/tokens/authentication", app.TokenHandler.HandleCreateToken)
-
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	return r
 }

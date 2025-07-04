@@ -1,6 +1,8 @@
+//go:generate swag init
 package main
 
 import (
+	_ "backend/docs"
 	"backend/internal/app"
 	"backend/internal/routes"
 	"flag"
@@ -9,6 +11,14 @@ import (
 	"time"
 )
 
+// @title Tours API
+// @version 1.0
+// @description REST API for managing tours and bookings
+// @termsOfService http://example.com/terms/
+// @contact.name Clint Okumu
+// @contact.email clint@example.com
+// @host localhost:8080
+// @BasePath /
 func main() {
 	var port int
 	flag.IntVar(&port, "port", 8080, "Go backend server port")

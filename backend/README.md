@@ -76,4 +76,3 @@ This section describes the frontend application.
 *   **Next.js**: React framework for building user interfaces.
 *   **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
 
-

@@ -28,6 +28,17 @@ type registerRequest struct {
 	Password string `json:"password"`
 }
 
+// Register godoc
+// @Summary Register a new user
+// @Description Register a new user with name, email, and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body registerRequest true "User registration details"
+// @Success 201 {object} object{user=object{id=int,name=string,email=string,role=string}}
+// @Failure 400 {object} object{error=string} "Invalid request format or missing fields"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /users/register [post]
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var input registerRequest
 
@@ -81,6 +92,18 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
+// Login godoc
+// @Summary Log in a user
+// @Description Log in a user with email and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body loginRequest true "User login credentials"
+// @Success 200 {object} object{user=object{id=int,name=string,email=string,role=string}}
+// @Failure 400 {object} object{error=string} "Invalid request format or missing fields"
+// @Failure 401 {object} object{error=string} "Invalid email or password"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /users/login [post]
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var input loginRequest
 

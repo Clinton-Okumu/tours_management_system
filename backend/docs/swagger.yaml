@@ -1,0 +1,728 @@
+basePath: /
+definitions:
+  api.createTokenRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  api.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  api.registerRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Booking:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: integer
+      start_date:
+        type: string
+      tour_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.Location:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      tour_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Review:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: number
+      review:
+        type: string
+      tourID:
+        type: integer
+      updated_at:
+        type: string
+      userID:
+        type: integer
+    type: object
+  models.Tour:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      difficulty:
+        type: string
+      duration:
+        type: integer
+      id:
+        type: integer
+      imageCover:
+        type: string
+      maxGroupSize:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      summary:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: clint@example.com
+    name: Clint Okumu
+  description: REST API for managing tours and bookings
+  termsOfService: http://example.com/terms/
+  title: Tours API
+  version: "1.0"
+paths:
+  /booking:
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking with tour ID, user ID, and booking details
+      parameters:
+      - description: Booking object
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.Booking'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new booking
+      tags:
+      - bookings
+  /booking/{id}:
+    delete:
+      description: Delete a specific booking using its ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a booking by ID
+      tags:
+      - bookings
+    get:
+      description: Retrieve a booking using its ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a booking by ID
+      tags:
+      - bookings
+    put:
+      consumes:
+      - application/json
+      description: Update an existing booking with new information
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated booking object
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.Booking'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a booking by ID
+      tags:
+      - bookings
+  /location:
+    post:
+      consumes:
+      - application/json
+      description: Create a location with name, description, etc.
+      parameters:
+      - description: Location object
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/models.Location'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new location
+      tags:
+      - locations
+  /location/{id}:
+    delete:
+      description: Delete a specific location by its ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a location by ID
+      tags:
+      - locations
+    get:
+      description: Retrieve location info by ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a location by ID
+      tags:
+      - locations
+    put:
+      consumes:
+      - application/json
+      description: Update an existing location using the ID and JSON body
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated location object
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/models.Location'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a location by ID
+      tags:
+      - locations
+  /review:
+    post:
+      consumes:
+      - application/json
+      description: Submit a review for a tour
+      parameters:
+      - description: Review object
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/models.Review'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new review
+      tags:
+      - reviews
+  /review/{id}:
+    delete:
+      description: Delete a specific review using its ID
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a review by ID
+      tags:
+      - reviews
+  /tokens/authentication:
+    post:
+      consumes:
+      - application/json
+      description: Validates email & password and returns an authentication token
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/api.createTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Generate an authentication token
+      tags:
+      - auth
+  /tour:
+    post:
+      consumes:
+      - application/json
+      description: Add a new tour to the database
+      parameters:
+      - description: Tour data
+        in: body
+        name: tour
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tour'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new tour
+      tags:
+      - tours
+  /tour/{id}:
+    delete:
+      description: Delete a specific tour by ID
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a tour
+      tags:
+      - tours
+    get:
+      description: Retrieve a specific tour by its ID
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get tour by ID
+      tags:
+      - tours
+    put:
+      consumes:
+      - application/json
+      description: Update an existing tour by ID
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated tour data
+        in: body
+        name: tour
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tour'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a tour
+      tags:
+      - tours
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Log in a user with email and password
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              user:
+                properties:
+                  email:
+                    type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  role:
+                    type: string
+                type: object
+            type: object
+        "400":
+          description: Invalid request format or missing fields
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "401":
+          description: Invalid email or password
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Log in a user
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with name, email, and password
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              user:
+                properties:
+                  email:
+                    type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  role:
+                    type: string
+                type: object
+            type: object
+        "400":
+          description: Invalid request format or missing fields
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - users
+swagger: "2.0"
