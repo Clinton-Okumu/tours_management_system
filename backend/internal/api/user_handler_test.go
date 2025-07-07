@@ -4,6 +4,7 @@ import (
 	"backend/internal/api"
 	"backend/internal/models"
 	"backend/internal/store"
+	"backend/internal/testutils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -15,45 +16,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
-func setupTestDB(t *testing.T) *gorm.DB {
-	t.Helper()
-
-	dsn := "host=localhost user=postgres password=postgres dbname=tours_test port=5432 sslmode=disable TimeZone=Africa/Nairobi"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("failed to connect to test DB: %v", err)
-	}
-
-	err = db.AutoMigrate(
-		&models.User{},
-		&models.Tour{},
-		&models.Booking{},
-		&models.Location{},
-		&models.Review{},
-	)
-	if err != nil {
-		t.Fatalf("failed to migrate models: %v", err)
-	}
-
-	sqlDB, err := db.DB()
-	if err != nil {
-		t.Fatalf("failed to get raw DB: %v", err)
-	}
-
-	_, err = sqlDB.Exec(`TRUNCATE users, tours, bookings, locations, reviews RESTART IDENTITY CASCADE`)
-	if err != nil {
-		t.Fatalf("failed to truncate tables: %v", err)
-	}
-
-	return db
-}
-
 func setupUserHandler(t *testing.T) (*chi.Mux, store.UserStore) {
-	db := setupTestDB(t)
+	db := testutils.SetupTestDB(t)
 	userStore := store.NewUserStore(db)
 	logger := log.New(nil, "", 0)
 	handler := api.NewUserHandler(userStore, logger)
@@ -83,7 +49,7 @@ func TestRegisterHandler_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, rec.Code)
 
-	var resp map[string]interface{}
+	var resp map[string]any
 	err := json.NewDecoder(rec.Body).Decode(&resp)
 	require.NoError(t, err)
 	assert.Contains(t, resp, "user")
@@ -117,7 +83,7 @@ func TestLoginHandler_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 
-	var resp map[string]interface{}
+	var resp map[string]any
 	err = json.NewDecoder(rec.Body).Decode(&resp)
 	require.NoError(t, err)
 	assert.Contains(t, resp, "user")

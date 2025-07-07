@@ -117,6 +117,10 @@ func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 
 	err = th.tourStore.UpdateTour(r.Context(), &tour)
 	if err != nil {
+		if errors.Is(err, store.ErrTourNotFound) {
+			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "tour not found"})
+			return
+		}
 		th.logger.Printf("ERROR: updating tour: %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "could not update tour"})
 		return
@@ -144,6 +148,10 @@ func (th *TourHandler) DeleteTour(w http.ResponseWriter, r *http.Request) {
 
 	err = th.tourStore.DeleteTour(r.Context(), uint(id))
 	if err != nil {
+		if errors.Is(err, store.ErrTourNotFound) {
+			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "tour not found"})
+			return
+		}
 		th.logger.Printf("ERROR: deleting tour: %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "could not delete tour"})
 		return
