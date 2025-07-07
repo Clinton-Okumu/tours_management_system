@@ -20,20 +20,36 @@ func Open() (*gorm.DB, error) {
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 	sslmode := os.Getenv("DB_SSLMODE")
+	appEnv := os.Getenv("APP_ENV") // development or production
 
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Africa/Nairobi",
 		host, port, user, password, dbname, sslmode,
 	)
 
+	var logLevel logger.LogLevel
+	if appEnv == "production" {
+		logLevel = logger.Silent
+	} else {
+		logLevel = logger.Info
+	}
+
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: time.Second,
+			LogLevel:      logLevel,
+			Colorful:      appEnv != "production",
+		},
+	)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: newLogger,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to DB: %w", err)
 	}
 
-	// Optional: ping DB
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get generic DB: %w", err)

@@ -46,8 +46,6 @@ func TestCreateAndGetBooking(t *testing.T) {
 		UserID:    user.ID,
 		StartDate: time.Date(2025, 7, 10, 0, 0, 0, 0, time.UTC),
 		EndDate:   time.Date(2025, 12, 10, 0, 0, 0, 0, time.UTC),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	ctx := context.Background()
@@ -75,8 +73,6 @@ func TestUpdateBooking(t *testing.T) {
 		UserID:    user.ID,
 		StartDate: time.Date(2025, 8, 1, 0, 0, 0, 0, time.UTC),
 		EndDate:   time.Date(2025, 8, 10, 0, 0, 0, 0, time.UTC),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	ctx := context.Background()
@@ -105,8 +101,6 @@ func TestDeleteBooking(t *testing.T) {
 		UserID:    user.ID,
 		StartDate: time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC),
 		EndDate:   time.Date(2025, 9, 5, 0, 0, 0, 0, time.UTC),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	ctx := context.Background()
