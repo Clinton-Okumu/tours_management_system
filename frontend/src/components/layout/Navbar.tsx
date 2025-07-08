@@ -1,5 +1,8 @@
 "use client";
 import logo from "@/assets/logo.png";
+import LoginForm from "@/components/auth/Login";
+import Modal from "@/components/auth/Modal";
+import SignupForm from "@/components/auth/Register";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,151 +11,137 @@ import React, { useEffect, useState } from "react";
 const NavbarLinks = [
   { id: 1, title: "Home", link: "/" },
   { id: 2, title: "Tours", link: "/tours" },
-  { id: 3, title: "Features", link: "/features" },
-  { id: 4, title: "About", link: "/about" },
-  { id: 5, title: "Contact", link: "/contact" },
+  { id: 3, title: "About", link: "/about" },
 ];
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
   const pathname = usePathname();
 
-  // Handle scroll effect
+  // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when clicking outside
+  // Close mobile menu on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
       if (isMobileMenuOpen && !target.closest(".nav-container")) {
         setMobileMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // Check if link is active
-  const isActiveLink = (link: string) => {
-    if (link === "/" && pathname === "/") return true;
-    if (link !== "/" && pathname.startsWith(link)) return true;
-    return false;
-  };
+  const isActiveLink = (link: string) =>
+    link === pathname || (link !== "/" && pathname.startsWith(link));
 
   return (
-    <div
-      className={`w-full mx-auto px-4 py-4 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 nav-container ${
-        scrolled
-          ? "bg-white shadow-md"
-          : "bg-white/95 shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
-      }`}
-    >
-      {/* Logo section */}
-      <div className="flex items-center gap-3">
-        <Image
-          src={logo}
-          alt="FitJourney logo"
-          width={50}
-          height={50}
-          className="w-[50px]"
-          priority
-        />
-        <p className="font-bold text-xl text-gray-800">
-          Tour<span className="text-orange-500">Vista</span>
-        </p>
-      </div>
+    <>
+      <div
+        className={`w-full mx-auto px-4 py-4 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 nav-container ${
+          scrolled
+            ? "bg-white shadow-md"
+            : "bg-white/95 shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+        }`}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3">
+          <Image
+            src={logo}
+            alt="TourVista logo"
+            width={50}
+            height={50}
+            className="w-[50px]"
+            priority
+          />
+          <p className="font-bold text-xl text-gray-800">
+            Tour<span className="text-orange-500">Vista</span>
+          </p>
+        </div>
 
-      {/* Desktop Menu */}
-      <div className="hidden md:block">
-        <ul className="flex gap-6">
-          {NavbarLinks.map((navLink) => (
-            <li key={navLink.id}>
-              <Link
-                className={`font-medium transition-colors duration-200 relative group ${
-                  isActiveLink(navLink.link)
-                    ? "text-orange-500"
-                    : "text-gray-800 hover:text-orange-500"
-                }`}
-                href={navLink.link}
-              >
-                {navLink.title}
-                <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-orange-400 transition-all duration-300 ${
+        {/* Desktop Links */}
+        <div className="hidden md:block">
+          <ul className="flex gap-6">
+            {NavbarLinks.map((navLink) => (
+              <li key={navLink.id}>
+                <Link
+                  className={`font-medium transition-colors duration-200 relative group ${
                     isActiveLink(navLink.link)
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
+                      ? "text-orange-500"
+                      : "text-gray-800 hover:text-orange-500"
                   }`}
-                ></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+                  href={navLink.link}
+                >
+                  {navLink.title}
+                  <span
+                    className={`absolute bottom-0 left-0 h-0.5 bg-orange-400 transition-all duration-300 ${
+                      isActiveLink(navLink.link)
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                    }`}
+                  ></span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      {/* Button section */}
-      <div className="hidden md:flex space-x-4">
-        {["Login", "Signup"].map((label) => (
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex space-x-4">
           <button
-            key={label}
-            className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+            onClick={() => setShowLogin(true)}
+            className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md"
           >
-            {label}
+            Login
           </button>
-        ))}
-      </div>
+          <button
+            onClick={() => setShowSignup(true)}
+            className="bg-white border border-orange-400 hover:bg-orange-100 text-orange-500 px-6 py-2 rounded-lg font-medium transition-all"
+          >
+            Signup
+          </button>
+        </div>
 
-      {/* Mobile Menu Button */}
-      <div className="md:hidden flex items-center">
-        <button
-          className="p-2 text-gray-700 hover:text-orange-500 transition-colors focus:outline-none"
-          onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {isMobileMenuOpen ? (
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-gray-700 hover:text-orange-500"
+          >
             <svg
               className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              {isMobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
             </svg>
-          ) : (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -162,30 +151,60 @@ const Navbar = () => {
             {NavbarLinks.map((navLink) => (
               <li key={navLink.id} className="border-b border-gray-100 pb-2">
                 <Link
-                  className={`block transition-colors text-lg font-medium ${
+                  href={navLink.link}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block text-lg font-medium ${
                     isActiveLink(navLink.link)
                       ? "text-orange-500"
                       : "text-gray-800 hover:text-orange-500"
                   }`}
-                  href={navLink.link}
-                  onClick={() => setMobileMenuOpen(false)}
                 >
                   {navLink.title}
                 </Link>
               </li>
             ))}
             <li className="pt-2 space-y-2">
-              <button className="w-full bg-orange-400 hover:bg-orange-500 active:scale-95 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-md hover:shadow-lg transition-all duration-300">
+              <button
+                onClick={() => {
+                  setShowLogin(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-md hover:shadow-lg transition-all"
+              >
                 Login
               </button>
-              <button className="w-full bg-white hover:bg-orange-100 border border-orange-300 px-6 py-3 rounded-lg text-orange-500 font-semibold text-center shadow-sm hover:shadow-md transition-all duration-300">
+              <button
+                onClick={() => {
+                  setShowSignup(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full bg-white hover:bg-orange-100 border border-orange-300 px-6 py-3 rounded-lg text-orange-500 font-semibold text-center shadow-sm hover:shadow-md transition-all"
+              >
                 Signup
               </button>
             </li>
           </ul>
         </div>
       )}
-    </div>
+
+      {/* Login Modal */}
+      <Modal
+        title="Login to your account"
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+      >
+        <LoginForm />
+      </Modal>
+
+      {/* Signup Modal */}
+      <Modal
+        title="Create a new account"
+        isOpen={showSignup}
+        onClose={() => setShowSignup(false)}
+      >
+        <SignupForm />
+      </Modal>
+    </>
   );
 };
 
