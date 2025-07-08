@@ -1,8 +1,8 @@
 import BookingForm from "@/components/home/BookingForm";
-import HeroImage from "@/components/home/Hero";
-import Testimonials from "@/components/home/Testimonials";
-import WhyChooseUs from "@/components/home/WhyChooseUs";
 import OurDestinations from "@/components/home/FeaturedTours";
+import GallerySection from "@/components/home/Gallery";
+import HeroImage from "@/components/home/Hero";
+import WhyChooseUs from "@/components/home/WhyChooseUs";
 export default function HomePage() {
   return (
     <>
@@ -18,8 +18,8 @@ export default function HomePage() {
       {/* why choose us section */}
       <WhyChooseUs />
 
-      {/* testimonials section */}
-      <Testimonials />
+      {/* Gallery section */}
+      <GallerySection />
     </>
   );
 }

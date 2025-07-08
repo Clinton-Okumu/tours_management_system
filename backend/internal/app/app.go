@@ -79,3 +79,7 @@ func NewApplication() (*Application, error) {
 func (a *Application) HealthChecker(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Status is available\n")
 }
+
+func (a *Application) Welcome(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Welcome to the tours managemant API")
+}
