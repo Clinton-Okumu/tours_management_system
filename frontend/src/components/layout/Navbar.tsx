@@ -1,8 +1,8 @@
 "use client";
 import logo from "@/assets/logo.png";
 import LoginForm from "@/components/auth/Login";
-import Modal from "@/components/auth/Modal";
 import SignupForm from "@/components/auth/Register";
+import Modal from "@/components/auth/Modal";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,6 +19,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
   const pathname = usePathname();
 
   // Scroll detection
@@ -30,7 +31,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on outside click
+  // Click outside to close mobile menu
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -42,11 +43,38 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
+  // Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const isActiveLink = (link: string) =>
     link === pathname || (link !== "/" && pathname.startsWith(link));
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  const handleLoginSuccess = () => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setShowLogin(false);
+  };
+
+  const handleSignupSuccess = () => {
+    setShowSignup(false);
+  };
+
   return (
     <>
+      {/* Navbar */}
       <div
         className={`w-full mx-auto px-4 py-4 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 nav-container ${
           scrolled
@@ -69,7 +97,7 @@ const Navbar = () => {
           </p>
         </div>
 
-        {/* Desktop Links */}
+        {/* Desktop Navigation Links */}
         <div className="hidden md:block">
           <ul className="flex gap-6">
             {NavbarLinks.map((navLink) => (
@@ -96,20 +124,36 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Desktop Buttons */}
-        <div className="hidden md:flex space-x-4">
-          <button
-            onClick={() => setShowLogin(true)}
-            className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => setShowSignup(true)}
-            className="bg-white border border-orange-400 hover:bg-orange-100 text-orange-500 px-6 py-2 rounded-lg font-medium transition-all"
-          >
-            Signup
-          </button>
+        {/* Desktop Auth Section */}
+        <div className="hidden md:flex items-center gap-4">
+          {!user ? (
+            <>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => setShowSignup(true)}
+                className="bg-white border border-orange-400 hover:bg-orange-100 text-orange-500 px-6 py-2 rounded-lg font-medium transition-all"
+              >
+                Signup
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-orange-500 text-sm font-medium"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -163,46 +207,63 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            <li className="pt-2 space-y-2">
-              <button
-                onClick={() => {
-                  setShowLogin(true);
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-md hover:shadow-lg transition-all"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => {
-                  setShowSignup(true);
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full bg-white hover:bg-orange-100 border border-orange-300 px-6 py-3 rounded-lg text-orange-500 font-semibold text-center shadow-sm hover:shadow-md transition-all"
-              >
-                Signup
-              </button>
-            </li>
+
+            {!user ? (
+              <li className="pt-2 space-y-2">
+                <button
+                  onClick={() => {
+                    setShowLogin(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-md hover:shadow-lg transition-all"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSignup(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-white hover:bg-orange-100 border border-orange-300 px-6 py-3 rounded-lg text-orange-500 font-semibold text-center shadow-sm hover:shadow-md transition-all"
+                >
+                  Signup
+                </button>
+              </li>
+            ) : (
+              <li className="flex items-center gap-4 pt-4">
+                <div className="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-gray-700 hover:text-orange-500 text-sm font-medium"
+                >
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
 
-      {/* Login Modal */}
+      {/* Modals */}
       <Modal
         title="Login to your account"
         isOpen={showLogin}
         onClose={() => setShowLogin(false)}
       >
-        <LoginForm />
+        <LoginForm onSuccess={handleLoginSuccess} />
       </Modal>
 
-      {/* Signup Modal */}
       <Modal
         title="Create a new account"
         isOpen={showSignup}
         onClose={() => setShowSignup(false)}
       >
-        <SignupForm />
+        <SignupForm onSuccess={handleSignupSuccess} />
       </Modal>
     </>
   );

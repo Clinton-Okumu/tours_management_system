@@ -10,7 +10,7 @@ type User struct {
 	Email    string `gorm:"type:varchar(100);uniqueIndex;not null"`
 	Password string `gorm:"type:varchar(255);not null" json:"-"`
 	Role     string `gorm:"type:varchar(20);default:'user'"`
-	Username string `gorm:"type:varchar(100);uniqueIndex"`
+	// Username string `gorm:"type:varchar(100);uniqueIndex"`
 }
 
 var AnonymousUser = &User{}
