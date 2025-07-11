@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Tour struct {
-	BaseModel
+	gorm.Model
 	Name         string  `gorm:"type:varchar(100);not null"`
 	Duration     int     `gorm:"not null"`
 	MaxGroupSize int     `gorm:"not null"`

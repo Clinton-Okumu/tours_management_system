@@ -1,7 +1,7 @@
 package api
 
 import (
-	"backend/internal/models"
+	"backend/internal/dto"
 	"backend/internal/store"
 	"backend/internal/utils"
 	"encoding/json"
@@ -29,29 +29,32 @@ func NewTourHandler(store store.TourStore, logger *log.Logger) *TourHandler {
 // @Tags tours
 // @Accept json
 // @Produce json
-// @Param tour body models.Tour true "Tour data"
-// @Success 201 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Param tour body dto.TourCreateRequest true "Tour data"
+// @Success 201 {object} dto.TourResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 500 {object} utils.ErrorResponse
 // @Router /tour [post]
 func (th *TourHandler) CreateTour(w http.ResponseWriter, r *http.Request) {
-	var tour models.Tour
+	var input dto.TourCreateRequest
 
-	err := json.NewDecoder(r.Body).Decode(&tour)
+	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
 		th.logger.Printf("ERROR: decoding tour: %v", err)
 		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "invalid request format"})
 		return
 	}
 
-	createdTour, err := th.tourStore.CreateTour(r.Context(), &tour)
+	tour := dto.ToTourModel(&input)
+
+	createdTour, err := th.tourStore.CreateTour(r.Context(), tour)
 	if err != nil {
 		th.logger.Printf("ERROR: creating tour: %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "could not create tour"})
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"tour": createdTour})
+	resp := dto.ToTourResponse(createdTour)
+	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"tour": resp})
 }
 
 // GetTourByID godoc
@@ -60,10 +63,10 @@ func (th *TourHandler) CreateTour(w http.ResponseWriter, r *http.Request) {
 // @Tags tours
 // @Produce json
 // @Param id path int true "Tour ID"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} dto.TourResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Failure 500 {object} utils.ErrorResponse
 // @Router /tour/{id} [get]
 func (th *TourHandler) GetTourByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
@@ -83,7 +86,8 @@ func (th *TourHandler) GetTourByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"tour": tour})
+	resp := dto.ToTourResponse(tour)
+	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"tour": resp})
 }
 
 // UpdateTour godoc
@@ -93,10 +97,11 @@ func (th *TourHandler) GetTourByID(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Tour ID"
-// @Param tour body models.Tour true "Updated tour data"
+// @Param tour body dto.TourCreateRequest true "Updated tour data"
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Failure 500 {object} utils.ErrorResponse
 // @Router /tour/{id} [put]
 func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
@@ -105,17 +110,17 @@ func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tour models.Tour
-	err = json.NewDecoder(r.Body).Decode(&tour)
+	var input dto.TourCreateRequest
+	err = json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
 		th.logger.Printf("ERROR: decoding tour: %v", err)
 		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "invalid request format"})
 		return
 	}
 
+	tour := dto.ToTourModel(&input)
 	tour.ID = uint(id)
-
-	err = th.tourStore.UpdateTour(r.Context(), &tour)
+	err = th.tourStore.UpdateTour(r.Context(), tour)
 	if err != nil {
 		if errors.Is(err, store.ErrTourNotFound) {
 			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "tour not found"})
@@ -135,9 +140,10 @@ func (th *TourHandler) UpdateTour(w http.ResponseWriter, r *http.Request) {
 // @Tags tours
 // @Produce json
 // @Param id path int true "Tour ID"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Failure 500 {object} utils.ErrorResponse
 // @Router /tour/{id} [delete]
 func (th *TourHandler) DeleteTour(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.ReadIDParam(r)
@@ -152,6 +158,7 @@ func (th *TourHandler) DeleteTour(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "tour not found"})
 			return
 		}
+
 		th.logger.Printf("ERROR: deleting tour: %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "could not delete tour"})
 		return

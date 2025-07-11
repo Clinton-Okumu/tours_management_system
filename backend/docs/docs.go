@@ -580,7 +580,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Tour"
+                            "$ref": "#/definitions/dto.TourCreateRequest"
                         }
                     }
                 ],
@@ -588,22 +588,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.TourResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -632,29 +629,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.TourResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -685,7 +678,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Tour"
+                            "$ref": "#/definitions/dto.TourCreateRequest"
                         }
                     }
                 ],
@@ -700,15 +693,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -736,21 +733,27 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": true
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -955,104 +958,49 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Booking": {
+        "dto.TourCreateRequest": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
+                "description": {
+                    "type": "string",
+                    "example": "Detailed description of the tour"
                 },
-                "deleted_at": {
-                    "type": "string"
+                "difficulty": {
+                    "type": "string",
+                    "example": "easy"
                 },
-                "end_date": {
-                    "type": "string"
+                "duration": {
+                    "type": "integer",
+                    "example": 7
                 },
-                "id": {
-                    "type": "integer"
+                "imageCover": {
+                    "type": "string",
+                    "example": "cover.jpg"
                 },
-                "start_date": {
-                    "type": "string"
-                },
-                "tour_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Location": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
+                "maxGroupSize": {
+                    "type": "integer",
+                    "example": 10
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Safari Tour"
                 },
-                "tour_id": {
-                    "type": "integer"
+                "price": {
+                    "type": "number",
+                    "example": 299.99
                 },
-                "updated_at": {
-                    "type": "string"
+                "summary": {
+                    "type": "string",
+                    "example": "A short summary of the tour"
                 }
             }
         },
-        "models.Review": {
+        "dto.TourResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "rating": {
-                    "type": "number"
-                },
-                "review": {
-                    "type": "string"
-                },
-                "tourID": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Tour": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-07-11T14:00:00Z"
                 },
                 "description": {
                     "type": "string"
@@ -1064,7 +1012,8 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "imageCover": {
                     "type": "string"
@@ -1082,7 +1031,107 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:05:00Z"
+                }
+            }
+        },
+        "models.Booking": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:00:00Z"
+                },
+                "end_date": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tour_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:05:00Z"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Location": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tour_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:05:00Z"
+                }
+            }
+        },
+        "models.Review": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "review": {
+                    "type": "string"
+                },
+                "tourID": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2025-07-11T14:05:00Z"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "something went wrong"
                 }
             }
         }
