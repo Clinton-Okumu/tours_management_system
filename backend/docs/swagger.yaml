@@ -23,70 +23,37 @@ definitions:
       password:
         type: string
     type: object
-  models.Booking:
+  dto.TourCreateRequest:
     properties:
-      created_at:
+      description:
+        example: Detailed description of the tour
         type: string
-      deleted_at:
+      difficulty:
+        example: easy
         type: string
-      end_date:
-        type: string
-      id:
+      duration:
+        example: 7
         type: integer
-      start_date:
+      imageCover:
+        example: cover.jpg
         type: string
-      tour_id:
+      maxGroupSize:
+        example: 10
         type: integer
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  models.Location:
-    properties:
-      address:
-        type: string
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      id:
-        type: integer
-      lat:
-        type: number
-      lng:
-        type: number
       name:
+        example: Safari Tour
         type: string
-      tour_id:
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  models.Review:
-    properties:
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      id:
-        type: integer
-      rating:
+      price:
+        example: 299.99
         type: number
-      review:
+      summary:
+        example: A short summary of the tour
         type: string
-      tourID:
-        type: integer
-      updated_at:
-        type: string
-      userID:
-        type: integer
     type: object
-  models.Tour:
+  dto.TourResponse:
     properties:
       created_at:
-        type: string
-      deleted_at:
+        example: "2025-07-11T14:00:00Z"
         type: string
       description:
         type: string
@@ -95,6 +62,7 @@ definitions:
       duration:
         type: integer
       id:
+        example: 1
         type: integer
       imageCover:
         type: string
@@ -107,6 +75,75 @@ definitions:
       summary:
         type: string
       updated_at:
+        example: "2025-07-11T14:05:00Z"
+        type: string
+    type: object
+  models.Booking:
+    properties:
+      created_at:
+        example: "2025-07-11T14:00:00Z"
+        type: string
+      end_date:
+        type: string
+      id:
+        example: 1
+        type: integer
+      start_date:
+        type: string
+      tour_id:
+        type: integer
+      updated_at:
+        example: "2025-07-11T14:05:00Z"
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.Location:
+    properties:
+      address:
+        type: string
+      created_at:
+        example: "2025-07-11T14:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      tour_id:
+        type: integer
+      updated_at:
+        example: "2025-07-11T14:05:00Z"
+        type: string
+    type: object
+  models.Review:
+    properties:
+      created_at:
+        example: "2025-07-11T14:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      rating:
+        type: number
+      review:
+        type: string
+      tourID:
+        type: integer
+      updated_at:
+        example: "2025-07-11T14:05:00Z"
+        type: string
+      userID:
+        type: integer
+    type: object
+  utils.ErrorResponse:
+    properties:
+      error:
+        example: something went wrong
         type: string
     type: object
 host: localhost:8080
@@ -499,25 +536,22 @@ paths:
         name: tour
         required: true
         schema:
-          $ref: '#/definitions/models.Tour'
+          $ref: '#/definitions/dto.TourCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/dto.TourResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
       summary: Create a new tour
       tags:
       - tours
@@ -536,18 +570,21 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
+            additionalProperties:
+              type: string
             type: object
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
       summary: Delete a tour
       tags:
       - tours
@@ -565,23 +602,19 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/dto.TourResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
       summary: Get tour by ID
       tags:
       - tours
@@ -600,7 +633,7 @@ paths:
         name: tour
         required: true
         schema:
-          $ref: '#/definitions/models.Tour'
+          $ref: '#/definitions/dto.TourCreateRequest'
       produces:
       - application/json
       responses:
@@ -612,13 +645,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.ErrorResponse'
       summary: Update a tour
       tags:
       - tours
