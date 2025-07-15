@@ -72,5 +72,11 @@ func (h *TokenHandler) HandleCreateToken(w http.ResponseWriter, r *http.Request)
 	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{
 		"token":  plaintext,
 		"expiry": tokenModel.Expiry,
+		"user": map[string]any{
+			"id":    user.ID,
+			"name":  user.Name,
+			"email": user.Email,
+			"role":  user.Role,
+		},
 	})
 }

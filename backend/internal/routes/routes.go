@@ -39,12 +39,12 @@ func SetUpRoutes(app *app.Application) *chi.Mux {
 		r.Post("/review", app.ReviewHandler.CreateReview)
 		r.Delete("/review/{id}", app.ReviewHandler.DeleteReview)
 		// User
-		r.Post("/login", app.UserHandler.Login)
+		r.Post("/login", app.TokenHandler.HandleCreateToken)
+		// r.Post("/login", app.UserHandler.Login)
 	})
 	r.Get("/", app.Welcome)
 	r.Get("/health", app.HealthChecker)
 	r.Post("/register", app.UserHandler.Register)
-	r.Post("/tokens/authentication", app.TokenHandler.HandleCreateToken)
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	return r
 }
