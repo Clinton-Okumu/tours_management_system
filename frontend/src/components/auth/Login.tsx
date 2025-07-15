@@ -18,7 +18,8 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
 
     try {
       const res = await login({ email, password });
-      localStorage.setItem("token", res.token); // save token
+      localStorage.setItem("token", res.token);
+      localStorage.setItem("user", JSON.stringify(res.user));
 
       if (onSuccess) onSuccess(); // close modal
 

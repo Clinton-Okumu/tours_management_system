@@ -239,7 +239,7 @@ const Navbar = () => {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="text-gray-700 hover:text-orange-500 text-sm font-medium"
+                  className="flex items-center gap-2 bg-gray-100 hover:bg-orange-50 border border-gray-300 hover:border-orange-400 text-gray-700 hover:text-orange-600 text-sm font-semibold px-4 py-2 rounded-md shadow-sm transition-all duration-200"
                 >
                   Logout
                 </button>
